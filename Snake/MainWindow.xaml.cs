@@ -32,7 +32,12 @@ namespace Snake
         int score;
         //таймер по которому 
         DispatcherTimer moveTimer;
-        
+
+        int lose1;
+        int lose2;
+
+
+
         //конструктор формы, выполняется при запуске программы
         public MainWindow()
         {
@@ -83,8 +88,15 @@ namespace Snake
                 if (p.x == head.x && p.y == head.y)
                 {
                     //мы проиграли
+                    if (score >= 2)
+                    {
+                        lose1++;
+                        score = 0;
+
+                        
+                    }
+                    tbGameOver.Visibility = Visibility.Visible;   
                     moveTimer.Stop();
-                    tbGameOver.Visibility = Visibility.Visible;
                     return;
                 }
             }
@@ -93,10 +105,34 @@ namespace Snake
             if (head.x < 40 || head.x >= 540 || head.y < 40 || head.y >= 540)
             {
                 //мы проиграли
+              
                 moveTimer.Stop();
                 tbGameOver.Visibility = Visibility.Visible;
+                if (score >= 2)
+                {
+                    score = 0;
+                    if (head.x < 40)
+                    {
+                        head.x += 40;
+                    }
+                    if (head.x >= 540)
+                    {
+                        head.x -= 40;
+                    }
+                    if (head.y < 40)
+                    {
+                        head.y += 40;
+                    }
+                    if (head.y >= 540)
+                    {
+                        head.y -= 40;
+                    }
+                    lose2 = 1;
+                }
+                
                 return;
             }
+           
 
             //проверяем, что голова змеи врезалась в яблоко
             if (head.x == apple.x && head.y == apple.y)
@@ -115,28 +151,62 @@ namespace Snake
         }
 
         // Обработчик нажатия на кнопку клавиатуры
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.Key)
+                    private void Window_KeyDown(object sender, KeyEventArgs e)
             {
-                case Key.Up:
-                    head.direction = Head.Direction.UP;
-                    break;
-                case Key.Down:
-                    head.direction = Head.Direction.DOWN;
-                    break;
-                case Key.Left:
-                    head.direction = Head.Direction.LEFT;
-                    break;
-                case Key.Right:
-                    head.direction = Head.Direction.RIGHT;
-                    break;
+                switch (e.Key)
+                {
+                    case Key.Up:
+                        if (lose1 == 1 || lose2 == 1)
+                        {
+                            lose1 = 0;
+                            lose2 = 0;
+                            moveTimer.Start();
+                            head.direction = Head.Direction.UP;
+                            tbGameOver.Visibility = Visibility.Hidden;
+                        }
+                        else { head.direction = Head.Direction.UP; }
+                        break;
+                    case Key.Down:
+                        if (lose1 == 1 || lose2 == 1)
+                        {
+                            lose1 = 0;
+                            lose2 = 0;
+                            moveTimer.Start();
+                            head.direction = Head.Direction.DOWN;
+                            tbGameOver.Visibility = Visibility.Hidden;
+                        }
+                        else { head.direction = Head.Direction.DOWN; }
+                        break;
+                    case Key.Left:
+                        if (lose1 == 1 || lose2 == 1)
+                        {
+                            lose1 = 0;
+                            lose2 = 0;
+                            moveTimer.Start();
+                            head.direction = Head.Direction.LEFT;
+                            tbGameOver.Visibility = Visibility.Hidden;
+                        }
+                        else { head.direction = Head.Direction.LEFT; }
+                        break;
+                    case Key.Right:
+                        if (lose1 == 1 || lose2 == 1)
+                        {
+                            lose1 = 0;
+                            lose2 = 0;
+                            moveTimer.Start();
+                            head.direction = Head.Direction.RIGHT;
+                            tbGameOver.Visibility = Visibility.Hidden;
+                        }
+                        else { head.direction = Head.Direction.RIGHT; }
+                        break;
+                }
             }
-        }
 
         // Обработчик нажатия кнопки "Start"
         private void button1_Click(object sender, RoutedEventArgs e)
         {
+            lose1 = 0;
+            lose2 = 0;
             // обнуляем счет
             score = 0;
             // обнуляем змею
@@ -284,6 +354,7 @@ namespace Snake
                 m_direction = Direction.NONE;
             }
 
+           
             public override void move()
             {
                 switch (m_direction)
@@ -303,6 +374,7 @@ namespace Snake
                 }
             }
         }
+
 
         public class BodyPart : PositionedEntity
         {
